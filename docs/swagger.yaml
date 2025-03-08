@@ -1,9 +1,223 @@
 basePath: /api/v1
+definitions:
+  handlers.getAllProductsResponse:
+    description: Product list response container
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.GetProductResponce'
+        type: array
+    type: object
+  handlers.myError:
+    description: Error response object
+    properties:
+      message:
+        type: string
+    type: object
+  types.CreateProductRequest:
+    description: Product creation request object
+    properties:
+      available_stock:
+        description: число закупленных экземпляров товара
+        type: integer
+      category:
+        type: string
+      image_id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      supplier_id:
+        type: integer
+    type: object
+  types.GetProductResponce:
+    description: Product details response object
+    properties:
+      available_stock:
+        description: число закупленных экземпляров товара
+        type: integer
+      category:
+        type: string
+      image_id:
+        type: string
+      last_update_date:
+        description: число последней закупки
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      supplier_id:
+        type: integer
+    type: object
 host: localhost:8000
 info:
   contact: {}
   description: This is the API documentation for the Shop application.
   title: Shop API Documentation
   version: "1.0"
-paths: {}
+paths:
+  /api/v1/products:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of all products available in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of products
+          schema:
+            $ref: '#/definitions/handlers.getAllProductsResponse'
+        "500":
+          description: '{''message'': ''Failed to retrieve products''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Get all products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Creates a product with the provided details and returns its ID
+      parameters:
+      - description: Product details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''id'': 123}'
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: '{''message'': ''Invalid request body''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Failed to create product''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Create a new product
+      tags:
+      - products
+  /api/v1/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a product from the database by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''Status'': ''ok''}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: '{''message'': ''Invalid product ID''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Product not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Delete a product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a product's information by its unique identifier
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product details
+          schema:
+            $ref: '#/definitions/types.GetProductResponce'
+        "400":
+          description: '{''message'': ''Invalid product ID''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Product not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Get product details by ID
+      tags:
+      - products
+  /api/v1/products/{id}/decrease-amount:
+    put:
+      consumes:
+      - application/json
+      description: Reduces the available stock of a product by a specified amount
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Amount to decrease (minimum 1)
+        in: body
+        name: decrease_amount
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''message'': ''Product amount decreased successfully''}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: '{''message'': ''Invalid request parameters''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Product not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "409":
+          description: '{''message'': ''Not enough stock to decrease''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Decrease product stock
+      tags:
+      - products
 swagger: "2.0"

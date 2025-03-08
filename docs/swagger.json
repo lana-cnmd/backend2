@@ -8,5 +8,328 @@
     },
     "host": "localhost:8000",
     "basePath": "/api/v1",
-    "paths": {}
+    "paths": {
+        "/api/v1/products": {
+            "get": {
+                "description": "Returns a list of all products available in the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Get all products",
+                "responses": {
+                    "200": {
+                        "description": "List of products",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.getAllProductsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Failed to retrieve products'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a product with the provided details and returns its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Create a new product",
+                "parameters": [
+                    {
+                        "description": "Product details",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateProductRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'id': 123}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid request body'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Failed to create product'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/products/{id}": {
+            "get": {
+                "description": "Retrieves a product's information by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Get product details by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product details",
+                        "schema": {
+                            "$ref": "#/definitions/types.GetProductResponce"
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid product ID'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Product not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Removes a product from the database by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Delete a product",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'Status': 'ok'}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid product ID'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Product not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/products/{id}/decrease-amount": {
+            "put": {
+                "description": "Reduces the available stock of a product by a specified amount",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Decrease product stock",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Amount to decrease (minimum 1)",
+                        "name": "decrease_amount",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'message': 'Product amount decreased successfully'}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid request parameters'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Product not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "409": {
+                        "description": "{'message': 'Not enough stock to decrease'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handlers.getAllProductsResponse": {
+            "description": "Product list response container",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.GetProductResponce"
+                    }
+                }
+            }
+        },
+        "handlers.myError": {
+            "description": "Error response object",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.CreateProductRequest": {
+            "description": "Product creation request object",
+            "type": "object",
+            "properties": {
+                "available_stock": {
+                    "description": "число закупленных экземпляров товара",
+                    "type": "integer"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "image_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "supplier_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.GetProductResponce": {
+            "description": "Product details response object",
+            "type": "object",
+            "properties": {
+                "available_stock": {
+                    "description": "число закупленных экземпляров товара",
+                    "type": "integer"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "image_id": {
+                    "type": "string"
+                },
+                "last_update_date": {
+                    "description": "число последней закупки",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "supplier_id": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
 }
