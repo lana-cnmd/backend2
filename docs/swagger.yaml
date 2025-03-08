@@ -1,4 +1,9 @@
+basePath: /api/v1
+host: localhost:8000
 info:
   contact: {}
+  description: This is the API documentation for the Shop application.
+  title: Shop API Documentation
+  version: "1.0"
 paths: {}
 swagger: "2.0"

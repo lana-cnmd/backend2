@@ -17,6 +17,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+// @title Shop API Documentation
+// @version 1.0
+// @description This is the API documentation for the Shop application.
+// @host localhost:8000
+// @BasePath /api/v1
 func main() {
 	if err := initConfig(); err != nil {
 		log.Fatalf("error init config: %s", err.Error())
