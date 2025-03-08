@@ -15,6 +15,274 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/clients": {
+            "get": {
+                "description": "Returns a list of all clients with optional pagination (limit/offset)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Get all clients",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Number of clients per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Skip first N clients",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of clients",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.getAllClientsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid limit/offset values'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Failed to retrieve clients'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a client with the provided personal details and returns its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Create a new client",
+                "parameters": [
+                    {
+                        "description": "Client details",
+                        "name": "client",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateClientRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'id': 123}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid request body'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Failed to create client'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/clients/search": {
+            "get": {
+                "description": "Finds a client by their first and last name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Search client by name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Client's first name",
+                        "name": "first_name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Client's last name",
+                        "name": "last_name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Client details",
+                        "schema": {
+                            "$ref": "#/definitions/types.SearchClientResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'empty first or last name'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Client not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/clients/{id}": {
+            "delete": {
+                "description": "Removes a client from the database by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Delete a client",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Client ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'Status': 'ok'}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid client ID'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Client not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Failed to delete client'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/clients/{id}/address": {
+            "put": {
+                "description": "Partially updates the address details of a client by their ID (at least one field must be provided)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Update client's address",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Client ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New address details (at least one field required)",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UpdateAddressInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'Status': 'ok'}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid request parameters'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Client not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/products": {
             "get": {
                 "description": "Returns a list of all products available in the system",
@@ -262,6 +530,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handlers.getAllClientsResponse": {
+            "description": "Clients list response container",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.SearchClientResponse"
+                    }
+                }
+            }
+        },
         "handlers.getAllProductsResponse": {
             "description": "Product list response container",
             "type": "object",
@@ -279,6 +559,33 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.CreateClientRequest": {
+            "description": "Client creation request object",
+            "type": "object",
+            "properties": {
+                "birthday": {
+                    "$ref": "#/definitions/types.CustomTime"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "client_name": {
+                    "type": "string"
+                },
+                "client_surname": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "street": {
                     "type": "string"
                 }
             }
@@ -308,6 +615,14 @@ const docTemplate = `{
                 }
             }
         },
+        "types.CustomTime": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
         "types.GetProductResponce": {
             "description": "Product details response object",
             "type": "object",
@@ -334,6 +649,51 @@ const docTemplate = `{
                 },
                 "supplier_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "types.SearchClientResponse": {
+            "description": "Client details response object",
+            "type": "object",
+            "properties": {
+                "birthday": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "client_name": {
+                    "type": "string"
+                },
+                "client_surname": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "registration_date": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.UpdateAddressInput": {
+            "description": "Address update request object (supports partial updates)",
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
                 }
             }
         }

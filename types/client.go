@@ -39,6 +39,17 @@ type Client struct {
 	AddressID        int        `json:"address_id"`
 }
 
+// CreateClientRequest represents the request to create a new client
+// @Description Client creation request object
+// @Name CreateClientRequest
+// @Id CreateClientRequest
+// @Property client_name type string description="Client's first name" example="John" required=true
+// @Property client_surname type string description="Client's last name" example="Doe" required=true
+// @Property birthday type string description="Client's birthday (YYYY-MM-DD)" example="1990-01-01" required=true format=date
+// @Property gender type string description="Gender (M/F)" example="M" required=true enum=["M", "F"]
+// @Property country type string description="Country of residence" example="USA"
+// @Property city type string description="City of residence" example="New York"
+// @Property street type string description="Street address" example="Broadway 100"
 type CreateClientRequest struct {
 	ClientName    string     `json:"client_name"`
 	ClientSurname string     `json:"client_surname"`
@@ -49,6 +60,18 @@ type CreateClientRequest struct {
 	Street        string     `json:"street"`
 }
 
+// SearchClientResponse represents client details
+// @Description Client details response object
+// @Name SearchClientResponse
+// @Id SearchClientResponse
+// @Property client_name type string description="Client's first name" example="John"
+// @Property client_surname type string description="Client's last name" example="Doe"
+// @Property birthday type string description="Client's birthday" example="1990-01-01" format=date
+// @Property gender type string description="Gender (M/F)" example="M"
+// @Property registration_date type string description="Registration date" example="2023-10-01T12:00:00Z" format=date-time
+// @Property country type string description="Country of residence" example="USA"
+// @Property city type string description="City of residence" example="New York"
+// @Property street type string description="Street address" example="Broadway 100"
 type SearchClientResponse struct {
 	ClientName       string    `json:"client_name" db:"client_name"`
 	ClientSurname    string    `json:"client_surname" db:"client_surname"`

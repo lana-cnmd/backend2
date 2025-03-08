@@ -1,5 +1,13 @@
 basePath: /api/v1
 definitions:
+  handlers.getAllClientsResponse:
+    description: Clients list response container
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/types.SearchClientResponse'
+        type: array
+    type: object
   handlers.getAllProductsResponse:
     description: Product list response container
     properties:
@@ -12,6 +20,24 @@ definitions:
     description: Error response object
     properties:
       message:
+        type: string
+    type: object
+  types.CreateClientRequest:
+    description: Client creation request object
+    properties:
+      birthday:
+        $ref: '#/definitions/types.CustomTime'
+      city:
+        type: string
+      client_name:
+        type: string
+      client_surname:
+        type: string
+      country:
+        type: string
+      gender:
+        type: string
+      street:
         type: string
     type: object
   types.CreateProductRequest:
@@ -30,6 +56,11 @@ definitions:
         type: number
       supplier_id:
         type: integer
+    type: object
+  types.CustomTime:
+    properties:
+      time:
+        type: string
     type: object
   types.GetProductResponce:
     description: Product details response object
@@ -51,6 +82,36 @@ definitions:
       supplier_id:
         type: integer
     type: object
+  types.SearchClientResponse:
+    description: Client details response object
+    properties:
+      birthday:
+        type: string
+      city:
+        type: string
+      client_name:
+        type: string
+      client_surname:
+        type: string
+      country:
+        type: string
+      gender:
+        type: string
+      registration_date:
+        type: string
+      street:
+        type: string
+    type: object
+  types.UpdateAddressInput:
+    description: Address update request object (supports partial updates)
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      street:
+        type: string
+    type: object
 host: localhost:8000
 info:
   contact: {}
@@ -58,6 +119,185 @@ info:
   title: Shop API Documentation
   version: "1.0"
 paths:
+  /api/v1/clients:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of all clients with optional pagination (limit/offset)
+      parameters:
+      - description: Number of clients per page
+        in: query
+        name: limit
+        type: integer
+      - description: Skip first N clients
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of clients
+          schema:
+            $ref: '#/definitions/handlers.getAllClientsResponse'
+        "400":
+          description: '{''message'': ''Invalid limit/offset values''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Failed to retrieve clients''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Get all clients
+      tags:
+      - clients
+    post:
+      consumes:
+      - application/json
+      description: Creates a client with the provided personal details and returns
+        its ID
+      parameters:
+      - description: Client details
+        in: body
+        name: client
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateClientRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''id'': 123}'
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: '{''message'': ''Invalid request body''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Failed to create client''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Create a new client
+      tags:
+      - clients
+  /api/v1/clients/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a client from the database by their ID
+      parameters:
+      - description: Client ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''Status'': ''ok''}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: '{''message'': ''Invalid client ID''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Client not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Failed to delete client''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Delete a client
+      tags:
+      - clients
+  /api/v1/clients/{id}/address:
+    put:
+      consumes:
+      - application/json
+      description: Partially updates the address details of a client by their ID (at
+        least one field must be provided)
+      parameters:
+      - description: Client ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New address details (at least one field required)
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateAddressInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''Status'': ''ok''}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: '{''message'': ''Invalid request parameters''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Client not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Update client's address
+      tags:
+      - clients
+  /api/v1/clients/search:
+    get:
+      consumes:
+      - application/json
+      description: Finds a client by their first and last name
+      parameters:
+      - description: Client's first name
+        in: query
+        name: first_name
+        required: true
+        type: string
+      - description: Client's last name
+        in: query
+        name: last_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Client details
+          schema:
+            $ref: '#/definitions/types.SearchClientResponse'
+        "400":
+          description: '{''message'': ''empty first or last name''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Client not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Search client by name
+      tags:
+      - clients
   /api/v1/products:
     get:
       consumes:
