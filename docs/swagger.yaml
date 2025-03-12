@@ -102,6 +102,20 @@ definitions:
       street:
         type: string
     type: object
+  types.SupplierDTO:
+    description: Supplier data transfer object
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      name:
+        type: string
+      phone_number:
+        type: string
+      street:
+        type: string
+    type: object
   types.UpdateAddressInput:
     description: Address update request object (supports partial updates)
     properties:
@@ -460,4 +474,145 @@ paths:
       summary: Decrease product stock
       tags:
       - products
+  /api/v1/suppliers:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new supplier to the system with the provided details
+      parameters:
+      - description: Supplier details
+        in: body
+        name: supplier
+        required: true
+        schema:
+          $ref: '#/definitions/types.SupplierDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''id'': 123}'
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: '{''message'': ''Invalid request body''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Failed to create supplier''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Create a new supplier
+      tags:
+      - suppliers
+  /api/v1/suppliers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a supplier from the database by its ID
+      parameters:
+      - description: Supplier ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''Status'': ''ok''}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: '{''message'': ''Invalid supplier ID''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Supplier not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Failed to delete supplier''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Delete a supplier
+      tags:
+      - suppliers
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a supplier's information by its unique identifier
+      parameters:
+      - description: Supplier ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Supplier details
+          schema:
+            $ref: '#/definitions/types.SupplierDTO'
+        "400":
+          description: '{''message'': ''Invalid supplier ID''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Supplier not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Get supplier details by ID
+      tags:
+      - suppliers
+  /api/v1/suppliers/{id}/address:
+    put:
+      consumes:
+      - application/json
+      description: Partially updates the address details of a supplier by their ID
+        (at least one field required)
+      parameters:
+      - description: Supplier ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New address details
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateAddressInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''Status'': ''ok''}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: '{''message'': ''Invalid request parameters''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Supplier not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Update supplier's address
+      tags:
+      - suppliers
 swagger: "2.0"

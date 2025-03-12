@@ -527,6 +527,218 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/suppliers": {
+            "post": {
+                "description": "Adds a new supplier to the system with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "suppliers"
+                ],
+                "summary": "Create a new supplier",
+                "parameters": [
+                    {
+                        "description": "Supplier details",
+                        "name": "supplier",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SupplierDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'id': 123}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid request body'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Failed to create supplier'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/suppliers/{id}": {
+            "get": {
+                "description": "Retrieves a supplier's information by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "suppliers"
+                ],
+                "summary": "Get supplier details by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Supplier ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Supplier details",
+                        "schema": {
+                            "$ref": "#/definitions/types.SupplierDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid supplier ID'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Supplier not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Removes a supplier from the database by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "suppliers"
+                ],
+                "summary": "Delete a supplier",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Supplier ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'Status': 'ok'}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid supplier ID'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Supplier not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Failed to delete supplier'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/suppliers/{id}/address": {
+            "put": {
+                "description": "Partially updates the address details of a supplier by their ID (at least one field required)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "suppliers"
+                ],
+                "summary": "Update supplier's address",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Supplier ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New address details",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UpdateAddressInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'Status': 'ok'}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid request parameters'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Supplier not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -675,6 +887,27 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "registration_date": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.SupplierDTO": {
+            "description": "Supplier data transfer object",
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone_number": {
                     "type": "string"
                 },
                 "street": {
