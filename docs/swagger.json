@@ -277,6 +277,256 @@
                 }
             }
         },
+        "/api/v1/images": {
+            "post": {
+                "description": "Uploads a new image and returns its unique UUID",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "Upload a new image",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Image file to upload",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'id': '123e4567-e89b-12d3-a456-426614174000'}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'No image file provided'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Failed to upload image'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images/product/{id}": {
+            "get": {
+                "description": "Retrieves the image associated with a specific product and sends it as a downloadable file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "Get image by product ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image file",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Product ID is required'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Image not found for the given product ID'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images/{id}": {
+            "get": {
+                "description": "Retrieves an image by its unique UUID and sends it as a downloadable file",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "Get image by UUID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Image UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Image file",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid image ID'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Image not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an image by its unique UUID with a new file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "Update an existing image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Image UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "New image file to replace the existing one",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{'message': 'Image updated successfully'}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid request parameters'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Image not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an image from the database by its unique UUID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "Delete image by UUID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Image UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Image deleted successfully"
+                    },
+                    "400": {
+                        "description": "{'message': 'Invalid image ID'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "404": {
+                        "description": "{'message': 'Image not found'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    },
+                    "500": {
+                        "description": "{'message': 'Internal server error'}",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.myError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/products": {
             "get": {
                 "description": "Returns a list of all products available in the system",

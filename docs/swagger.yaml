@@ -312,6 +312,174 @@ paths:
       summary: Search client by name
       tags:
       - clients
+  /api/v1/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads a new image and returns its unique UUID
+      parameters:
+      - description: Image file to upload
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''id'': ''123e4567-e89b-12d3-a456-426614174000''}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: '{''message'': ''No image file provided''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Failed to upload image''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Upload a new image
+      tags:
+      - images
+  /api/v1/images/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an image from the database by its unique UUID
+      parameters:
+      - description: Image UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Image deleted successfully
+        "400":
+          description: '{''message'': ''Invalid image ID''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Image not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Delete image by UUID
+      tags:
+      - images
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an image by its unique UUID and sends it as a downloadable
+        file
+      parameters:
+      - description: Image UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: Image file
+          schema:
+            type: file
+        "400":
+          description: '{''message'': ''Invalid image ID''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Image not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Get image by UUID
+      tags:
+      - images
+    put:
+      consumes:
+      - multipart/form-data
+      description: Updates an image by its unique UUID with a new file
+      parameters:
+      - description: Image UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New image file to replace the existing one
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{''message'': ''Image updated successfully''}'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: '{''message'': ''Invalid request parameters''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Image not found''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Update an existing image
+      tags:
+      - images
+  /api/v1/images/product/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the image associated with a specific product and sends
+        it as a downloadable file
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: Image file
+          schema:
+            type: file
+        "400":
+          description: '{''message'': ''Product ID is required''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "404":
+          description: '{''message'': ''Image not found for the given product ID''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+        "500":
+          description: '{''message'': ''Internal server error''}'
+          schema:
+            $ref: '#/definitions/handlers.myError'
+      summary: Get image by product ID
+      tags:
+      - images
   /api/v1/products:
     get:
       consumes:
